@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Online Examination</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- =========================
+     EXAM HEADER
+========================= -->
+
+<header class="exam-header">
+
+    <div>
+        <h1>🎓 Online Examination</h1>
+        <p>MCQ Assessment</p>
+    </div>
+
+    <div class="timer" id="timer">
+        ⏱️ 30:00
+    </div>
+
+</header>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="exam-container">
+
+
+    <!-- Student Information -->
+
+    <div class="student-info">
+
+        <div>
+            <strong>👤 Student</strong>
+            <p id="displayName">Loading...</p>
+        </div>
+
+        <div>
+            <strong>🆔 Student ID</strong>
+            <p id="displayId">Loading...</p>
+        </div>
+
+        <div>
+            <strong>📚 Total Questions</strong>
+            <p id="totalQuestions">0</p>
+        </div>
+
+    </div>
+
+
+    <!-- Progress -->
+
+    <div class="exam-progress">
+
+        <div class="progress-info">
+
+            <span id="progressText">
+                Question 0 of 0
+            </span>
+
+            <span id="progressPercent">
+                0%
+            </span>
+
+        </div>
+
+        <div class="progress-bar">
+
+            <div
+                class="progress-fill"
+                id="progressFill">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Questions -->
+
+    <div id="examQuestions"></div>
+
+
+    <!-- Submit -->
+
+    <div class="exam-buttons">
+
+        <button
+            id="submitBtn"
+            onclick="submitExam()">
+
+            Submit Examination ✓
+
+        </button>
+
+    </div>
+
+
+    <!-- Result -->
+
+    <div id="result"></div>
+
+</main>
+
+
+<script>
+
+/* =========================
+   LOAD QUESTIONS
+========================= */
+
+let questions =
+    JSON.parse(
+        localStorage.getItem("questions")
+    ) || [];
+
+
+/* =========================
+   STUDENT DETAILS
+========================= */
+
+const savedName =
+    localStorage.getItem("studentName") || "";
+
+const savedId =
+    localStorage.getItem("studentId") || "";
+
+
+document.getElementById("displayName")
+    .textContent =
+    savedName || "Student";
+
+document.getElementById("displayId")
+    .textContent =
+    savedId || "Not available";
+
+document.getElementById("totalQuestions")
+    .textContent =
+    questions.length;
+
+
+/* =========================
+   DISPLAY EXAM
+========================= */
+
+function displayExam() {
+
+    const examQuestions =
+        document.getElementById("examQuestions");
+
+    examQuestions.innerHTML = "";
+
+
+    if (questions.length === 0) {
+
+        examQuestions.innerHTML = `
+
+            <div class="question-card empty-exam">
+
+                <div class="empty-icon">
+                    📭
+                </div>
+
+                <h2>No Questions Available</h2>
+
+                <p>
+                    Please ask the faculty to add
+                    MCQ questions before starting
+                    the examination.
+                </p>
+
+            </div>
+
+        `;
+
+        document.getElementById("submitBtn")
+            .style.display = "none";
+
+        return;
+    }
+
+
+    questions.forEach((q, index) => {
+
+        const questionDiv =
+            document.createElement("div");
+
+        questionDiv.className =
+            "question-card exam-question";
+
+
+        let optionsHTML = "";
+
+
+        q.options.forEach(
+            (option, optionIndex) => {
+
+                optionsHTML += `
+
+                    <label
+                        class="option"
+                        for="q${index}_${optionIndex}"
+                    >
+
+                        <input
+                            type="radio"
+                            id="q${index}_${optionIndex}"
+                            name="question${index}"
+                            value="${optionIndex}"
+                            onchange="updateProgress()"
+                        >
+
+                        <span class="option-letter">
+                            ${String.fromCharCode(
+                                65 + optionIndex
+                            )}
+                        </span>
+
+                        <span class="option-text">
+                            ${option}
+                        </span>
+
+                    </label>
+
+                `;
+
+            }
+        );
+
+
+        questionDiv.innerHTML = `
+
+            <div class="question-number">
+                QUESTION ${index + 1}
+            </div>
+
+            <h2>
+                ${q.question}
+            </h2>
+
+            <div class="options-container">
+                ${optionsHTML}
+            </div>
+
+        `;
+
+
+        examQuestions.appendChild(
+            questionDiv
+        );
+
+    });
+
+
+    updateProgress();
+
+}
+
+
+/* =========================
+   PROGRESS
+========================= */
+
+function updateProgress() {
+
+    if (questions.length === 0) {
+        return;
+    }
+
+
+    let answered = 0;
+
+
+    questions.forEach(
+        (q, index) => {
+
+            const selected =
+                document.querySelector(
+                    `input[name="question${index}"]:checked`
+                );
+
+            if (selected) {
+                answered++;
+            }
+
+        }
+    );
+
+
+    const percentage =
+        Math.round(
+            (answered / questions.length) * 100
+        );
+
+
+    document.getElementById("progressText")
+        .textContent =
+        `Answered ${answered} of ${questions.length}`;
+
+
+    document.getElementById("progressPercent")
+        .textContent =
+        `${percentage}%`;
+
+
+    document.getElementById("progressFill")
+        .style.width =
+        `${percentage}%`;
+
+}
+
+
+/* =========================
+   SUBMIT EXAM
+========================= */
+
+function submitExam() {
+
+    if (questions.length === 0) {
+
+        alert("No questions available.");
+
+        return;
+    }
+
+
+    const unanswered =
+        questions.filter(
+            (q, index) => {
+
+                return !document.querySelector(
+                    `input[name="question${index}"]:checked`
+                );
+
+            }
+        ).length;
+
+
+    if (unanswered > 0) {
+
+        const confirmSubmit =
+            confirm(
+                `You have ${unanswered} unanswered question(s).\n\nDo you want to submit anyway?`
+            );
+
+
+        if (!confirmSubmit) {
+            return;
+        }
+
+    }
+
+
+    let score = 0;
+
+
+    questions.forEach(
+        (q, index) => {
+
+            const selected =
+                document.querySelector(
+                    `input[name="question${index}"]:checked`
+                );
+
+
+            if (
+                selected &&
+                Number(selected.value) ===
+                Number(q.correctAnswer)
+            ) {
+
+                score++;
+
+            }
+
+        }
+    );
+
+
+    const percentage =
+        Math.round(
+            (score / questions.length) * 100
+        );
+
+
+    showResult(
+        score,
+        percentage
+    );
+
+}
+
+
+/* =========================
+   RESULT
+========================= */
+
+function showResult(
+    score,
+    percentage
+) {
+
+    document.getElementById("examQuestions")
+        .style.display = "none";
+
+    document.querySelector(".exam-progress")
+        .style.display = "none";
+
+    document.getElementById("submitBtn")
+        .style.display = "none";
+
+
+    let message = "";
+    let icon = "";
+
+
+    if (percentage >= 80) {
+
+        icon = "🎉";
+        message = "Excellent Performance!";
+
+    } else if (percentage >= 50) {
+
+        icon = "👏";
+        message = "Good Job!";
+
+    } else {
+
+        icon = "📚";
+        message = "Keep Practicing!";
+
+    }
+
+
+    document.getElementById("result")
+        .innerHTML = `
+
+            <div class="result-container">
+
+                <div class="result-card">
+
+                    <div class="result-icon">
+                        ${icon}
+                    </div>
+
+                    <h1>
+                        Exam Completed!
+                    </h1>
+
+                    <p>
+                        ${message}
+                    </p>
+
+                    <div class="score-box">
+
+                        <p>
+                            Your Score
+                        </p>
+
+                        <h2>
+                            ${score}/${questions.length}
+                        </h2>
+
+                        <p>
+                            ${percentage}%
+                        </p>
+
+                    </div>
+
+                    <div class="result-details">
+
+                        <p>
+                            <strong>Student:</strong>
+                            ${savedName}
+                        </p>
+
+                        <p>
+                            <strong>Student ID:</strong>
+                            ${savedId}
+                        </p>
+
+                    </div>
+
+                    <button
+                        onclick="location.href='index.html'">
+
+                        Back to Login
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+}
+
+
+/* =========================
+   TIMER
+========================= */
+
+let timeLeft = 30 * 60;
+
+function startTimer() {
+
+    const timer =
+        document.getElementById("timer");
+
+
+    const interval =
+        setInterval(() => {
+
+            const minutes =
+                Math.floor(
+                    timeLeft / 60
+                );
+
+            const seconds =
+                timeLeft % 60;
+
+
+            timer.textContent =
+                `⏱️ ${minutes}:${String(seconds).padStart(2, "0")}`;
+
+
+            if (timeLeft <= 0) {
+
+                clearInterval(interval);
+
+                alert(
+                    "Time is over. Your exam will be submitted."
+                );
+
+                submitExam();
+
+                return;
+            }
+
+
+            timeLeft--;
+
+        }, 1000);
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+displayExam();
+startTimer();
+
+</script>
+
+</body>
+  </html>
