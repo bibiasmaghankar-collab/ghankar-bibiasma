@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="dashboard-header">
+    <h1>Faculty Dashboard</h1>
+
+    <a href="index.html">Student Login</a>
+</header>
+
+<main class="dashboard">
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <span>📚</span>
+            <h2 id="questionCount">0</h2>
+            <p>Total Questions</p>
+        </div>
+
+        <div class="stat-card">
+            <span>👨‍🎓</span>
+            <h2>25</h2>
+            <p>Total Students</p>
+        </div>
+
+        <div class="stat-card">
+            <span>📝</span>
+            <h2>5</h2>
+            <p>Exams Conducted</p>
+        </div>
+
+    </div>
+
+    <section class="question-bank">
+
+        <div class="section-title">
+            <h2>Question Bank</h2>
+            <button onclick="showQuestionForm()">
+                + Add Question
+            </button>
+        </div>
+
+        <div id="questionForm" class="add-question-form">
+
+            <input
+                type="text"
+                id="newQuestion"
+                placeholder="Enter Question"
+            >
+
+            <input
+                type="text"
+                id="option1"
+                placeholder="Option 1"
+            >
+
+            <input
+                type="text"
+                id="option2"
+                placeholder="Option 2"
+            >
+
+            <input
+                type="text"
+                id="option3"
+                placeholder="Option 3"
+            >
+
+            <input
+                type="text"
+                id="option4"
+                placeholder="Option 4"
+            >
+
+            <select id="correctAnswer">
+                <option value="">Select Correct Answer</option>
+                <option value="0">Option 1</option>
+                <option value="1">Option 2</option>
+                <option value="2">Option 3</option>
+                <option value="3">Option 4</option>
+            </select>
+
+            <button onclick="addQuestion()">
+                Save Question
+            </button>
+
+        </div>
+
+        <div id="questionList"></div>
+
+    </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
