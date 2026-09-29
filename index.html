@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Login | Online Examination</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <div class="login-card">
+
+        <!-- Logo -->
+        <div class="logo">
+            🎓
+        </div>
+
+        <!-- Heading -->
+        <h1>Welcome Student!</h1>
+
+        <p>
+            Login to start your online MCQ examination
+        </p>
+
+
+        <!-- Student Name -->
+        <input
+            type="text"
+            id="studentName"
+            placeholder="👤  Enter Student Name"
+            autocomplete="name"
+        >
+
+
+        <!-- Student ID -->
+        <input
+            type="text"
+            id="studentId"
+            placeholder="🆔  Enter Student ID"
+            autocomplete="off"
+        >
+
+
+        <!-- Login Button -->
+        <button onclick="studentLogin()">
+            Start Examination →
+        </button>
+
+
+        <!-- Error Message -->
+        <p id="errorMessage"></p>
+
+
+        <!-- Faculty Link -->
+        <a
+            href="faculty.html"
+            class="faculty-link"
+        >
+            Faculty Login
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function studentLogin() {
+
+    const name =
+        document.getElementById("studentName")
+        .value.trim();
+
+    const id =
+        document.getElementById("studentId")
+        .value.trim();
+
+    const errorMessage =
+        document.getElementById("errorMessage");
+
+
+    // Clear previous error
+    errorMessage.textContent = "";
+
+
+    // Validate fields
+    if (name === "" || id === "") {
+
+        errorMessage.textContent =
+            "⚠️ Please enter Student Name and Student ID.";
+
+        errorMessage.style.color = "#dc2626";
+
+        return;
+    }
+
+
+    // Save student details
+    localStorage.setItem(
+        "studentName",
+        name
+    );
+
+    localStorage.setItem(
+        "studentId",
+        id
+    );
+
+
+    // Open exam page
+    window.location.href =
+        "student.html";
+}
+
+</script>
+
+</body>
+  </html>
+  
